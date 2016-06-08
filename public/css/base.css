@@ -60,3 +60,25 @@ p, ul {
 ul {
   padding-left: 30px;
 }
+
+#menu {
+  float: left;
+  display: inline-block;
+  width: 30%;
+  border: 1px dashed;
+}
+
+#tool {
+  float: right;
+  display: inline-block;
+  width: 68%;
+  border: 1px dotted;
+}
+
+#editor {
+  margin: 10px;
+}
+
+textarea {
+  width: 100%;
+}
