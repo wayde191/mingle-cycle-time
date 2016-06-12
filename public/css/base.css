@@ -79,6 +79,17 @@ ul {
   margin: 10px;
 }
 
+#detail-editor {
+  margin: 15px;
+}
+
 textarea {
   width: 100%;
+}
+
+button {
+  margin: 8px;
+  width: 80px;
+  height: 25px;
+  cursor: pointer;
 }

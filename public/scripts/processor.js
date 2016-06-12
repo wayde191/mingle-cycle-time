@@ -9,7 +9,7 @@
         }
 
         return {
-            startValue: steps[0],
+            startValue: steps[0].replace('&amp;', '&'),
             endValue: steps[1]
         }
     };

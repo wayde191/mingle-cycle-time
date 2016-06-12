@@ -19,14 +19,14 @@ var Summary = React.createClass({
     render: function() {
         var startValue = '', endValue = '', total = '', nodes = [];
         if (this.props.data.constructor != Array) {
-            var startValue = this.props.data.steps.startValue;
-            var endValue = this.props.data.steps.endValue;
-            var total = this.props.data.summary.total;
+            startValue = this.props.data.steps.startValue;
+            endValue = this.props.data.steps.endValue;
+            total = this.props.data.summary.total;
 
-            var nodes = this.props.data.summary.stage.map(function(stage) {
+            nodes = this.props.data.summary.stage.map(function(stage) {
                 return (
                     <li>
-                        {stage.name + ':' + stage.value}
+                        {stage.name + ' : ' + stage.value}
                     </li>
                 );
             });
@@ -42,6 +42,49 @@ var Summary = React.createClass({
                 <ul>
                     {nodes}
                 </ul>
+            </div>
+        );
+    }
+});
+
+var Cycles = React.createClass({
+    render: function() {
+        function getStages(stages){
+            return stages.map(function(stage) {
+                return (
+                    <li>
+                        {stage.name + ' : ' + stage.value}
+                    </li>
+                );
+            });
+        };
+
+        function getCycles(cycles){
+            return cycles.map(function(cycle) {
+                var nodes = getStages(cycle.stage);
+                return (
+                    <div>
+                        <a href={cycle.link} target='_blank'>{cycle.number}</a>
+                        <span>:   <strong>{cycle.duration}</strong> days:  </span>
+                        <span>{cycle.name}</span>
+                        <ul>{nodes}</ul>
+
+                        <div id="detail-editor">
+                            <textarea index={cycle.number} name="textarea" rows="10" cols="50" defaultValue="Input static story HTML source here"></textarea>
+                        </div>
+                    </div>
+                );
+            });
+        };
+
+        var cycles = '';
+        if (this.props.data.constructor != Array) {
+            cycles = getCycles(this.props.data.stories);
+        }
+
+        return (
+            <div className="Cycles">
+                {cycles}
             </div>
         );
     }
@@ -75,6 +118,7 @@ var Tool = React.createClass({
                 <div id="result">
                     <h3>Result:</h3>
                     <Summary data={this.state.data} />
+                    <Cycles data={this.state.data} />
                 </div>
 
             </div>
