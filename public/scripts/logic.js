@@ -15,6 +15,124 @@ var Menu = React.createClass({
     }
 });
 
+var Report = React.createClass({
+    render: function() {
+        var stories = '';
+        var totalSize = 0, totalDuration = 0, averagePointSpent = 0;
+        var cycleTime = '', averageCT = 0.00;
+        var streams = '', streamArr = [];
+
+        function findStreamByName(name){
+            return $.grep(streamArr, function(e){
+                return e.name === name;
+            });
+        };
+
+        function countStream(name, size){
+            var theTypeEle = findStreamByName(name);
+            if(theTypeEle !== undefined && theTypeEle.length > 0){
+                theTypeEle[0].size += size;
+            } else {
+                streamArr.push({name: name, size: size});
+            }
+        };
+
+        if (this.props.data.constructor != Array) {
+            stories = this.props.data.stories.map(function(story) {
+                story.detail = story.detail || [{size: 0, stream: 'empty'}];
+
+                return (
+                    <tr>
+                        <td>{story.number}</td>
+                        <td>{story.detail[0].size}</td>
+                        <td>{story.duration} days</td>
+                        <td>{story.detail[0].stream}</td>
+                    </tr>
+                );
+            });
+
+            $.each(this.props.data.stories, function(index, story){
+                story.detail = story.detail || [{size: 0, stream: 'empty'}];
+                countStream(story.detail[0].stream, parseInt(story.detail[0].size));
+
+                totalDuration += parseFloat(story.duration);
+                totalSize += parseInt(story.detail[0].size);
+                if(totalSize > 0) {
+                    averagePointSpent = totalDuration / totalSize;
+                }
+            });
+
+            streams = streamArr.map(function(stream) {
+                return (
+                    <tr>
+                        <th>{stream.name}</th>
+                        <td>{stream.size}</td>
+                    </tr>
+                );
+            });
+
+            cycleTime = this.props.data.summary.stage.map(function(stage){
+                averageCT += parseFloat(stage.value);
+                return (
+                    <tr>
+                        <th>{stage.name}</th>
+                        <td>{stage.value}</td>
+                    </tr>
+                );
+            });
+            averageCT = averageCT.toFixed(2);
+
+        }
+
+        return (
+            <div className="report">
+                <h3>Report:</h3>
+                <span>*Name: </span><input id="name" value=''/>
+                <span>  </span>
+                <span>*Dev Pair: </span><input id="pair" value=''/>
+                <div>
+                    <table id="report-table">
+                        <tr>
+                            <th>Story</th>
+                            <th>Size</th>
+                            <th>Actual</th>
+                            <th>Stream</th>
+                        </tr>
+                        {stories}
+                    </table>
+                    <table id="report-table">
+                        <tr>
+                            <th>Stream</th>
+                            <th>Total Size</th>
+                        </tr>
+                        {streams}
+                    </table>
+
+                    <table id="report-table">
+                        <tr>
+                            <th>完成点数</th>
+                            <th>总耗费时间</th>
+                            <th>平均点耗</th>
+                        </tr>
+                        <tr>
+                            <td>{totalSize}</td>
+                            <td>{totalDuration} 天</td>
+                            <td>{averagePointSpent}</td>
+                        </tr>
+                    </table>
+                    <table id="report-table">
+                        {cycleTime}
+                        <tr>
+                            <th>总CT</th>
+                            <td>{averageCT}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        );
+    }
+});
+
 var Summary = React.createClass({
     render: function() {
         var startValue = '', endValue = '', total = '', nodes = [];
@@ -89,7 +207,7 @@ var Cycles = React.createClass({
                         <ul>{nodes}</ul>
 
                         <div id="detail-editor">
-                            <textarea id={cycle.number} name="textarea" rows="10" cols="50" defaultValue="Input static story HTML source here"></textarea>
+                            <textarea id={cycle.number} name="textarea" rows="10" cols="50" defaultValue="2: Input static story HTML source here"></textarea>
                         </div>
                     </div>
                 );
@@ -140,15 +258,18 @@ var Tool = React.createClass({
         return (
             <div id="tool">
                 <h2>Tool</h2>
-                <button id="analyse-button">analyse</button>
-                <button id="analyse-detail-button">analyse-detail</button>
-                <button id="save-button">save</button>
+                <button id="analyse-button">1: Analyse</button>
+                <button id="analyse-detail-button">2: Analyse Detail</button>
+                <button id="save-button">3: Save Report</button>
 
+                <div id="report">
+                    <Report data={this.state.data} />
+                </div>
                 <div id="editor">
-                    <textarea name="textarea" rows="10" cols="50" defaultValue="Input static mingle cycle time HTML source here"></textarea>
+                    <textarea name="textarea" rows="10" cols="50" defaultValue="1: Input static mingle cycle time HTML source here"></textarea>
                 </div>
                 <div id="result">
-                    <h3>Result:</h3>
+                    <h3>Analyse Result:</h3>
                     <Summary data={this.state.data} />
                     <Cycles data={this.state.data} />
                 </div>
@@ -159,7 +280,7 @@ var Tool = React.createClass({
 });
 
 var CTBox = React.createClass({
-    handleCommentSubmit: function (comment) {
+    handleReportSubmit: function (comment) {
     },
     getInitialState: function () {
         return {data: []};
@@ -171,7 +292,7 @@ var CTBox = React.createClass({
             <div className="CTBox">
                 <h1>Sales Funnel Cycle Time</h1>
                 <Menu data={this.state.data}/>
-                <Tool onCommentSubmit={this.handleCommentSubmit}/>
+                <Tool onCommentSubmit={this.handleReportSubmit}/>
             </div>
         );
     }

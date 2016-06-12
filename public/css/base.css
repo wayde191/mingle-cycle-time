@@ -75,12 +75,30 @@ ul {
   border: 1px dotted;
 }
 
+#report {
+  margin: 10px;
+  background-color: burlywood;
+}
+
 #editor {
   margin: 10px;
 }
 
 #detail-editor {
   margin: 15px;
+}
+
+#report-table {
+  margin: 20px 20px;
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  display: inline-block;
+}
+
+table, th, td {
+  padding: 5px;
+  border: 1px solid black;
 }
 
 textarea {
