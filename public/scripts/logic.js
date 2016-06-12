@@ -74,15 +74,15 @@ var Cycles = React.createClass({
                         <span>{cycle.name}</span>
 
                         <div>
-                            <span>Stream: {detail.stream}</span>
+                            <span><strong>Stream</strong>: {detail.stream}</span>
                             <span>  </span>
-                            <span>Size: {detail.size}</span>
+                            <span><strong>Size</strong>: {detail.size}</span>
                             <span>  </span>
-                            <span>Own1: {detail.own1}</span>
+                            <span><strong>Own1</strong>: {detail.own1}</span>
                             <span>  </span>
-                            <span>Own2: {detail.own2}</span>
+                            <span><strong>Own2</strong>: {detail.own2}</span>
                             <span>  </span>
-                            <span>Completed Date: {detail.completedDate}</span>
+                            <span><strong>Completed Date</strong>: {detail.completedDate}</span>
                             <span>  </span>
                         </div>
 
