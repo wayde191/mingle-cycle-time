@@ -62,15 +62,34 @@ var Cycles = React.createClass({
         function getCycles(cycles){
             return cycles.map(function(cycle) {
                 var nodes = getStages(cycle.stage);
+                var detail = {};
+                if (cycle.detail && cycle.detail.length > 0){
+                    detail = cycle.detail[0];
+                }
+
                 return (
                     <div>
                         <a href={cycle.link} target='_blank'>{cycle.number}</a>
                         <span>:   <strong>{cycle.duration}</strong> days:  </span>
                         <span>{cycle.name}</span>
+
+                        <div>
+                            <span>Stream: {detail.stream}</span>
+                            <span>  </span>
+                            <span>Size: {detail.size}</span>
+                            <span>  </span>
+                            <span>Own1: {detail.own1}</span>
+                            <span>  </span>
+                            <span>Own2: {detail.own2}</span>
+                            <span>  </span>
+                            <span>Completed Date: {detail.completedDate}</span>
+                            <span>  </span>
+                        </div>
+
                         <ul>{nodes}</ul>
 
                         <div id="detail-editor">
-                            <textarea index={cycle.number} name="textarea" rows="10" cols="50" defaultValue="Input static story HTML source here"></textarea>
+                            <textarea id={cycle.number} name="textarea" rows="10" cols="50" defaultValue="Input static story HTML source here"></textarea>
                         </div>
                     </div>
                 );
@@ -95,9 +114,22 @@ var Tool = React.createClass({
         return {data: []};
     },
     componentDidMount: function () {
-        $('#initial').click(function () {
-        });
-        
+        $('#analyse-detail-button').click(function () {
+            var detailTextArea = $('#detail-editor textarea');
+            var details = $.map(detailTextArea, function(textarea) {
+                var key = $(textarea).attr('id');
+                var value = $(textarea).val();
+                return {
+                    id: key,
+                    html: value
+                };
+            });
+            var storyDetail = ct.analyzeDetail(details);
+            var mergedData = ct.mergeDetail(this.state.data, storyDetail);
+
+            this.setState({data: mergedData}, null);
+        }.bind(this));
+
         $('#analyse-button').click(function(){
             var htmlSourceStr = $('#editor textarea:first').val();
             var result = ct.analyze(htmlSourceStr);
@@ -109,7 +141,7 @@ var Tool = React.createClass({
             <div id="tool">
                 <h2>Tool</h2>
                 <button id="analyse-button">analyse</button>
-                <button id="initial">initial</button>
+                <button id="analyse-detail-button">analyse-detail</button>
                 <button id="save-button">save</button>
 
                 <div id="editor">
@@ -127,8 +159,6 @@ var Tool = React.createClass({
 });
 
 var CTBox = React.createClass({
-    loadCommentsFromServer: function () {
-    },
     handleCommentSubmit: function (comment) {
     },
     getInitialState: function () {
