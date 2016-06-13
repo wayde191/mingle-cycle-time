@@ -68,12 +68,14 @@
             summary: summary,
             stories: stories
         };
-
     };
 
     function findStoryDetail(HTMLEle){
         var stream = $(HTMLEle).find('#enumeratedpropertydefinition_101_panel input').val();
         var size = $(HTMLEle).find('#enumeratedpropertydefinition_6_panel input').val();
+        if(size === ""){
+            size = '1';
+        }
         var own1 = $(HTMLEle).find('#userpropertydefinition_104_panel .property-value-widget').text();
         var own2 = $(HTMLEle).find('#userpropertydefinition_105_panel .property-value-widget').text();
         var completedDate = $(HTMLEle).find('#datepropertydefinition_121_panel input').val();
@@ -153,6 +155,16 @@
                 alert(err);
             }.bind(this)
         });
+    };
+
+    ct.sortById = function(list){
+        function sortByName(a, b){
+            var aID = a.id;
+            var bID = b.id;
+            return ((aID > bID) ? -1 : ((aID < bID) ? 1 : 0));
+        }
+
+        return list.sort(sortByName);
     };
 
 })(window.ct = window.ct || {})

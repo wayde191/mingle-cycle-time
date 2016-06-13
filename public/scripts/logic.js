@@ -32,7 +32,7 @@ var Report = React.createClass({
 
                 return (
                     <tr>
-                        <td>{story.number}</td>
+                        <td><a href={story.link} target='_blank'>{story.number}</a></td>
                         <td>{story.detail[0].size}</td>
                         <td>{story.duration} days</td>
                         <td>{story.detail[0].stream}</td>
@@ -70,12 +70,11 @@ var Report = React.createClass({
                 );
             });
             averageCT = averageCT.toFixed(2);
-
         }
 
         return (
             <div className="report">
-                <h3>Report:</h3>
+                <h3>Report: {this.props.data.name}</h3>
                 <span>*Name: </span><input id="name" type='text'/>
                 <span>  </span>
                 <span>*Dev Pair: </span><input id="pair" type='text'/>
@@ -283,12 +282,25 @@ var Tool = React.createClass({
 });
 
 var Menu = React.createClass({
+    handleClick: function(report){
+        this.props.onMenuItemClicked(report);
+    },
     render: function () {
-        console.log(this.props.menu);
+        var reports = ct.sortById(this.props.data).map(function(report) {
+            return (
+                <li>
+                    <a id={report.id} href='#'
+                       onClick={this.handleClick.bind(this, report)}>
+                        {report.name} - {report.pair}
+                    </a>
+                </li>
+            );
+        }.bind(this));
 
         return (
             <div id="menu">
                 <h2>Menu</h2>
+                <ul>{reports}</ul>
             </div>
         );
     }
@@ -297,18 +309,25 @@ var Menu = React.createClass({
 var CTBox = React.createClass({
     handleReportSubmit: function (report) {
         ct.saveReport(report, function(data){
-            this.setState({data: data}, null);
+            this.setState({menu: data}, null);
         }.bind(this));
     },
     handleReportUpdate: function (report) {
         this.setState({data:report}, null);
+    },
+    handleMenuItemClicked: function (report) {
+        var reportData = JSON.parse(report.data);
+        reportData.name = report.name;
+        reportData.id = report.id;
+        reportData.pair = report.pair;
+        this.setState({data:reportData}, null);
     },
     getInitialState: function () {
         return {data: [], menu: []};
     },
     componentDidMount: function () {
         ct.getReport(function(data){
-            this.setState({data: data}, null);
+            this.setState({menu: data}, null);
         }.bind(this));
     },
     render: function () {
@@ -318,7 +337,8 @@ var CTBox = React.createClass({
                 <div id="report">
                     <Report data={this.state.data} />
                 </div>
-                <Menu data={this.state.menu}/>
+                <Menu data={this.state.menu}
+                      onMenuItemClicked={this.handleMenuItemClicked}/>
                 <Tool onReportSubmit={this.handleReportSubmit}
                       onReportUpdate={this.handleReportUpdate}/>
             </div>
