@@ -11,7 +11,7 @@ puts "Server started: http://localhost:#{port}/"
 root = File.expand_path './public'
 server = WEBrick::HTTPServer.new Port: port, DocumentRoot: root
 
-server.mount_proc '/api/comments' do |req, res|
+server.mount_proc '/api/reports' do |req, res|
   cycle_times = JSON.parse(File.read('./cycle-time.json', encoding: 'UTF-8'))
 
   if req.request_method == 'POST'

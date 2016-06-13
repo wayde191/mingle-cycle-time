@@ -119,4 +119,40 @@
         return data;
     };
 
+    ct.saveReport = function(data, cb){
+
+        var stringifyReport = {
+            name: data.reportName,
+            pair: data.pairNumber,
+            data: JSON.stringify(data.data)
+        };
+
+        $.ajax({
+            url: '/api/reports',
+            dataType: 'json',
+            type: 'POST',
+            data: stringifyReport,
+            success: function(data) {
+                cb(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                alert(err);
+            }.bind(this)
+        });
+    };
+
+    ct.getReport = function(cb){
+        $.ajax({
+            url: '/api/reports',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                cb(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                alert(err);
+            }.bind(this)
+        });
+    };
+
 })(window.ct = window.ct || {})

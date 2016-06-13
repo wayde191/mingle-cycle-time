@@ -4,17 +4,6 @@
  *      --actions
  *      --
  */
-
-var Menu = React.createClass({
-    render: function () {
-        return (
-            <div id="menu">
-                <h2>Menu</h2>
-            </div>
-        );
-    }
-});
-
 var Report = React.createClass({
     render: function() {
         var stories = '';
@@ -87,9 +76,9 @@ var Report = React.createClass({
         return (
             <div className="report">
                 <h3>Report:</h3>
-                <span>*Name: </span><input id="name" value=''/>
+                <span>*Name: </span><input id="name" type='text'/>
                 <span>  </span>
-                <span>*Dev Pair: </span><input id="pair" value=''/>
+                <span>*Dev Pair: </span><input id="pair" type='text'/>
                 <div>
                     <table id="report-table">
                         <tr>
@@ -246,12 +235,29 @@ var Tool = React.createClass({
             var mergedData = ct.mergeDetail(this.state.data, storyDetail);
 
             this.setState({data: mergedData}, null);
+            this.props.onReportUpdate(mergedData);
         }.bind(this));
 
         $('#analyse-button').click(function(){
             var htmlSourceStr = $('#editor textarea:first').val();
             var result = ct.analyze(htmlSourceStr);
+
             this.setState({data: result}, null);
+            this.props.onReportUpdate(result);
+        }.bind(this));
+
+        $('#save-button').click(function(){
+            var paras = {data: this.state.data};
+            var reportName = $('input#name').val();
+            var pairNumber = $('input#pair').val();
+            if(!reportName || !pairNumber){
+                alert('Report Name and Dev Pair are required.');
+                return;
+            }
+
+            paras.reportName = reportName;
+            paras.pairNumber = pairNumber;
+            this.props.onReportSubmit(paras);
         }.bind(this));
     },
     render: function () {
@@ -262,9 +268,6 @@ var Tool = React.createClass({
                 <button id="analyse-detail-button">2: Analyse Detail</button>
                 <button id="save-button">3: Save Report</button>
 
-                <div id="report">
-                    <Report data={this.state.data} />
-                </div>
                 <div id="editor">
                     <textarea name="textarea" rows="10" cols="50" defaultValue="1: Input static mingle cycle time HTML source here"></textarea>
                 </div>
@@ -279,20 +282,45 @@ var Tool = React.createClass({
     }
 });
 
+var Menu = React.createClass({
+    render: function () {
+        console.log(this.props.menu);
+
+        return (
+            <div id="menu">
+                <h2>Menu</h2>
+            </div>
+        );
+    }
+});
+
 var CTBox = React.createClass({
-    handleReportSubmit: function (comment) {
+    handleReportSubmit: function (report) {
+        ct.saveReport(report, function(data){
+            this.setState({data: data}, null);
+        }.bind(this));
+    },
+    handleReportUpdate: function (report) {
+        this.setState({data:report}, null);
     },
     getInitialState: function () {
-        return {data: []};
+        return {data: [], menu: []};
     },
     componentDidMount: function () {
+        ct.getReport(function(data){
+            this.setState({data: data}, null);
+        }.bind(this));
     },
     render: function () {
         return (
             <div className="CTBox">
                 <h1>Sales Funnel Cycle Time</h1>
-                <Menu data={this.state.data}/>
-                <Tool onCommentSubmit={this.handleReportSubmit}/>
+                <div id="report">
+                    <Report data={this.state.data} />
+                </div>
+                <Menu data={this.state.menu}/>
+                <Tool onReportSubmit={this.handleReportSubmit}
+                      onReportUpdate={this.handleReportUpdate}/>
             </div>
         );
     }
