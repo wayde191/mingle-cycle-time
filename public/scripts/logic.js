@@ -36,6 +36,8 @@ var Report = React.createClass({
                         <td>{story.detail[0].size}</td>
                         <td>{story.duration} days</td>
                         <td>{story.detail[0].stream}</td>
+                        <td>{story.detail[0].own1}</td>
+                        <td>{story.detail[0].own2}</td>
                     </tr>
                 );
             });
@@ -47,7 +49,7 @@ var Report = React.createClass({
                 totalDuration += parseFloat(story.duration);
                 totalSize += parseInt(story.detail[0].size);
                 if(totalSize > 0) {
-                    averagePointSpent = totalDuration / totalSize;
+                    averagePointSpent = (totalDuration / totalSize).toFixed(2);
                 }
             });
 
@@ -85,6 +87,8 @@ var Report = React.createClass({
                             <th>Size</th>
                             <th>Actual</th>
                             <th>Stream</th>
+                            <th>Own1</th>
+                            <th>Own2</th>
                         </tr>
                         {stories}
                     </table>
@@ -98,13 +102,13 @@ var Report = React.createClass({
 
                     <table id="report-table">
                         <tr>
-                            <th>完成点数</th>
-                            <th>总耗费时间</th>
-                            <th>平均点耗</th>
+                            <th>Total Size</th>
+                            <th>Days</th>
+                            <th>Day per Point</th>
                         </tr>
                         <tr>
                             <td>{totalSize}</td>
-                            <td>{totalDuration} 天</td>
+                            <td>{totalDuration} days</td>
                             <td>{averagePointSpent}</td>
                         </tr>
                     </table>
